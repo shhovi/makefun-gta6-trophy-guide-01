@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTA VI Trophy Guide &amp; Tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">&#9733;</div>
+    <div>
+      <h1>GTA VI Trophy Guide &amp; Tracker</h1>
+      <p class="subtitle">Grand Theft Auto VI &middot; PlayStation 5 &middot; all 55 trophies &middot; platinum roadmap</p>
+    </div>
+  </div>
+  <div class="progress-box">
+    <div class="progress-line"><span id="progress-count">0 of 55 earned</span><span id="progress-pct">0%</span></div>
+    <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+    <div id="grade-counts" class="grade-counts"></div>
+  </div>
+</header>
+
+<nav class="toolbar" aria-label="Filters and views">
+  <div class="view-tabs" role="tablist">
+    <button id="tab-tracker" class="tab active" type="button">Tracker</button>
+    <button id="tab-roadmap" class="tab" type="button">Platinum Roadmap</button>
+  </div>
+  <div class="kind-filters" id="kind-filters" aria-label="Filter by kind">
+    <button type="button" data-kind="all" class="chip active">All</button>
+    <button type="button" data-kind="story" class="chip">Story</button>
+    <button type="button" data-kind="missable" class="chip">Missable</button>
+    <button type="button" data-kind="collectibles" class="chip">Collectibles</button>
+    <button type="button" data-kind="activities" class="chip">Activities</button>
+    <button type="button" data-kind="online" class="chip">Online</button>
+  </div>
+  <label class="field">Grade
+    <select id="grade-filter">
+      <option value="all">All grades</option>
+      <option value="platinum">Platinum</option>
+      <option value="gold">Gold</option>
+      <option value="silver">Silver</option>
+      <option value="bronze">Bronze</option>
+    </select>
+  </label>
+  <label class="field">Show
+    <select id="earned-filter">
+      <option value="all">All trophies</option>
+      <option value="earned">Earned only</option>
+      <option value="remaining">Remaining only</option>
+    </select>
+  </label>
+  <input id="search-box" type="search" placeholder="Search trophies&hellip;" aria-label="Search trophies">
+  <label class="spoiler-toggle"><input id="spoiler-toggle" type="checkbox"> Hide spoilers</label>
+  <button id="export-btn" type="button" class="tool-btn">Export progress</button>
+  <label class="tool-btn import-label">Import progress<input id="import-file" type="file" accept="application/json" hidden></label>
+</nav>
+
+<main id="tracker-view" class="tracker-view">
+  <section class="list-panel" aria-label="Trophy list">
+    <div class="list-head"><span id="list-summary">55 trophies</span><span class="hint">Tick a trophy when you earn it. Click a row for its guide.</span></div>
+    <ul id="trophy-list" class="trophy-list"></ul>
+  </section>
+  <aside id="detail-panel" class="detail-panel" aria-label="Trophy guide"></aside>
+</main>
+
+<main id="roadmap-view" class="roadmap-view" hidden>
+  <p class="roadmap-intro">The platinum route in five stages: finish the story, grab the one-time story moments as they happen, sweep the counted collectibles, clear activities and cleanup, then the platinum pops. Missable trophies are flagged with <span class="flag">MISSABLE</span>.</p>
+  <div id="roadmap-stages" class="roadmap-stages"></div>
+</main>
+
+<footer class="foot">Fan-made offline tracker. Trophy names, descriptions and grades are the official list; guides are written in our own words from those descriptions. Sources are cited by name in each guide. Progress is stored only in your browser.</footer>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
