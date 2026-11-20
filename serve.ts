@@ -1,5 +1,6 @@
 // Tiny static file server for the app/ folder. Node standard library only.
 // Usage: node serve.ts [--port 8080]
+// Serves only inside app/ — paths escaping the root get a 403.
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { dirname, extname, join, normalize, resolve, sep } from 'node:path';

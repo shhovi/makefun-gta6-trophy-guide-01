@@ -1,4 +1,5 @@
 // Rendering: progress header, trophy list, guide detail panel and roadmap.
+// Spoiler handling lives here so every view masks hidden trophies the same way.
 
 import { GRADE_ORDER, KIND_LABELS, ROADMAP_STAGES, gradeCounts, trophiesInStage } from './data.js';
 

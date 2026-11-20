@@ -1,4 +1,5 @@
 // App wiring: load data, connect filters and views, handle screenshot scenes.
+// refresh() re-renders every panel from the single state object.
 
 import { loadTrophies } from './data.js';
 import { applyShotScene, exportProgress, importProgress, loadState, saveState, toggleEarned } from './state.js';

@@ -7,7 +7,8 @@
 An offline trophy tracker for GTA VI: all 55 trophies with their official
 names, descriptions and grades, a checklist with local progress saving and
 export/import, kind/grade/search/earned filters, a spoiler toggle, a detail
-guide panel with sources, and a five-stage platinum roadmap.
+guide panel with sources, and a five-stage platinum roadmap. Works fully
+offline — no account, no network, progress stays in your browser.
 
 ## Run
 

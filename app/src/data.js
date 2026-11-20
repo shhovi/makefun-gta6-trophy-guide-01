@@ -1,4 +1,5 @@
 // Trophy data: loading the official list and the roadmap stage definitions.
+// The list is sorted by id so the tracker always opens in trophy order.
 
 export const KIND_LABELS = {
   story: 'Story',

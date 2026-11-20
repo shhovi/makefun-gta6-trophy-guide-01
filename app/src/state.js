@@ -1,5 +1,6 @@
 // Tracker state: earned set + spoiler setting, saved in localStorage,
 // plus export / import of progress as a JSON file.
+// Versioned storage key so future schema changes never clobber old saves.
 
 const STORAGE_KEY = 'gtavi-trophy-tracker-v1';
 

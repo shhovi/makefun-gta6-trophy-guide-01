@@ -1,6 +1,7 @@
 // Entry point: copy app/ and screenshots/ into the output directory and
 // write dossier.json there with the vendored make.fun library.
 // Run with: node main.ts   (output dir from MAKEFUN_OUTPUT_DIR, else /output)
+// The clean-copy step below keeps repeated runs byte-identical.
 import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
