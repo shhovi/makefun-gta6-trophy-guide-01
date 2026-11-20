@@ -1,43 +1,60 @@
-# GTA VI Trophy Tracker
-
+# Vice Trophy Guide — GTA VI trophy tracker & platinum roadmap
 [![make.fun · gta6-trophy-guide-01](https://make.fun/badge/gta6-trophy-guide-01.svg)](https://make.fun/bounty/gta6-trophy-guide-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-trophy-guide-01)
 [![rank](https://make.fun/badge/gta6-trophy-guide-01/shhovi/makefun-gta6-trophy-guide-01/rank.svg)](https://make.fun/bounty/gta6-trophy-guide-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-trophy-guide-01)
 [![reward](https://make.fun/badge/gta6-trophy-guide-01/shhovi/makefun-gta6-trophy-guide-01/reward.svg)](https://make.fun/bounty/gta6-trophy-guide-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-trophy-guide-01)
 
-An offline checklist for all 55 PlayStation 5 trophies in Grand Theft Auto VI, based on the official trophy list dated 2026-11-18. Tick trophies off as you earn them, filter by kind, grade, or status, search by name, and open any trophy for a short guide and its sources. A spoiler toggle keeps hidden trophies secret until you earn them, and a five-stage roadmap groups everything into Story, Missables, Collectibles, Activities, and Platinum so you always know what to do next. Progress lives in your browser's localStorage and can be exported or imported as JSON — no account, no server, no network needed after the page loads.
+## What it is
+
+Vice Trophy Guide is an offline trophy tracker and platinum roadmap for a fictional GTA VI-style game set in Leonida. It lists 55 trophies with descriptions, rarity tiers, categories, missable flags, and spoiler flags, plus a 5-step roadmap to the platinum "King of Leonida". No accounts, no tracking — everything runs in your browser and saves to localStorage.
+
+Built as an entry for the [make.fun](https://make.fun) bounty gta6-trophy-guide-01.
 
 ## Features
 
-- Checklist of all 55 trophies with earned checkboxes saved in localStorage
-- Filters for kind, grade, earned/remaining status, plus free-text search
-- Spoiler toggle that hides hidden trophies' names and descriptions until earned
-- Detail panel with a short guide and sources for every trophy
-- Progress summary with earned count, percent complete, and per-grade totals
-- Five-stage platinum roadmap: Story, Missables, Collectibles, Activities, Platinum
-- Export/import of progress as a JSON file
+- Checklist of all 55 trophies with a live progress percentage and progress bar
+- Filters: all / earned / missing / missable / spoiler-safe
+- Search by trophy name or description
+- Step-by-step platinum roadmap view grouped into 5 steps
+- Spoiler blur toggle — spoiler trophies stay blurred until you opt in
+- Progress persists in localStorage; reset button to start over
+- Plain JS + CSS, no build step, works offline
 
 ## Run it
 
-Preview the tracker locally:
+Option A — tiny static server (Node 18+):
 
-```sh
+```bash
 node serve.ts
+# then open http://localhost:4173
 ```
 
-Then open http://localhost:8080/ in your browser.
+Option B — just open the file:
 
-Build the make.fun dossier (copies `app/` and `screenshots/` into the output folder and writes `dossier.json`):
-
-```sh
-node main.ts
+```bash
+open app/index.html
 ```
 
-Set `MAKEFUN_OUTPUT_DIR` to choose the output folder; it defaults to `/output`.
+Note: fetching `app/data/trophies.json` needs an HTTP origin in some browsers, so the server route is recommended.
 
-## Built for make.fun
+## Roadmap summary
 
-This project was built for the make.fun bounty [gta6-trophy-guide-01](https://make.fun/bounty/gta6-trophy-guide-01). If you want to join make.fun yourself, you can use this referral link: https://make.fun/r/kjey9p15
+1. **Step 1 — Story:** finish the main story. Grab the 6 missable trophies along the way (they're flagged in the tracker).
+2. **Step 2 — Missables cleanup:** mop up anything missable you skipped via mission replay or a second save.
+3. **Step 3 — Collectibles:** hidden packages, stunt jumps, landmarks, and other Leonida collectibles.
+4. **Step 4 — Activities:** races, side jobs, combat challenges, and exploration feats.
+5. **Step 5 — Online & final:** online trophies and the last grind to platinum.
+
+## Data
+
+All 55 trophies live in `app/data/trophies.json` — edit it to match real trophy lists once they're published. Each entry has an id, name, description, type (bronze/silver/gold/platinum), category, missable flag, spoiler flag, and roadmap step.
+
+## Tips
+
+- Filter by **Missable** before starting the story — those 6 trophies are the only ones you can permanently lose.
+- Use **Spoiler-safe** mode plus the spoiler blur if you want to hunt trophies without story reveals.
+- The roadmap view mirrors your tracker progress, so check off trophies in either place.
+- Progress is per-browser (localStorage key `vice-trophy-guide:earned:v1`) — use the same browser to keep your checklist.
 
 ## License
 
-MIT — do what you like with it.
+MIT — see `LICENSE`. Fan project; not affiliated with Rockstar Games or Take-Two Interactive.

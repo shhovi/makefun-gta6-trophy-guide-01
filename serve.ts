@@ -1,52 +1,46 @@
-// Tiny local server for previewing the trophy tracker in a browser.
-// Serves the app/ folder as plain static files. No dependencies.
-
+// Tiny static file server for the Vice Trophy Guide app.
+// Serves the app/ directory on http://localhost:4173 — no dependencies.
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { join, dirname, extname, normalize } from 'node:path';
+import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const root = join(here, 'app');
-const port = Number(process.env.PORT || 8080);
+const ROOT = join(fileURLToPath(new URL('.', import.meta.url)), 'app');
+const PORT = 4173;
 
-const types: Record<string, string> = {
+const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
-  '.mjs': 'text/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
   '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
+  '.png': 'image/png',
 };
 
-const server = createServer(async (req, res) => {
-  try {
-    const url = new URL(req.url || '/', 'http://localhost');
-    let path = decodeURIComponent(url.pathname);
-    if (path === '/') path = '/index.html';
-    const safe = normalize(path).replace(/^(\.\.[/\\])+/, '');
-    const file = join(root, safe);
-    if (!file.startsWith(root)) {
-      res.writeHead(403).end('Forbidden');
-      return;
+export function start(port = PORT) {
+  const server = createServer(async (req, res) => {
+    try {
+      const url = new URL(req.url || '/', 'http://localhost');
+      let pathname = decodeURIComponent(url.pathname);
+      if (pathname === '/') pathname = '/index.html';
+      const filePath = normalize(join(ROOT, pathname));
+      if (!filePath.startsWith(ROOT)) {
+        res.writeHead(403).end('Forbidden');
+        return;
+      }
+      const data = await readFile(filePath);
+      res.writeHead(200, {
+        'Content-Type': MIME[extname(filePath)] || 'application/octet-stream',
+        'Cache-Control': 'no-cache',
+      });
+      res.end(data);
+    } catch {
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Not found');
     }
-    const body = await readFile(file);
-    res.writeHead(200, {
-      'Content-Type': types[extname(file).toLowerCase()] || 'application/octet-stream',
-      // Local preview only: always serve fresh files while iterating.
-      'Cache-Control': 'no-store',
-    });
-    res.end(body);
-  } catch {
-    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('Not found');
-  }
-});
-
-server.listen(port, () => {
-  console.log(`Trophy tracker at http://localhost:${port}/`);
-});
+  });
+  server.listen(port, () => {
+    console.log('Vice Trophy Guide running at http://localhost:' + port);
+  });
+  return server;
+}

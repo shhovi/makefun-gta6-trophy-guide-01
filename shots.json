@@ -1,1 +1,1 @@
-[{"height":800,"name":"1-tracker.jpg","query":"?shot=tracker","width":1280},{"height":800,"name":"2-roadmap.jpg","query":"?shot=roadmap","width":1280},{"height":800,"name":"3-missable.jpg","query":"?shot=missable","width":1280},{"height":800,"name":"4-spoiler.jpg","query":"?shot=spoiler","width":1280}]
+{"shots":[{"name":"1-tracker","path":"/","wait":800},{"name":"2-roadmap","path":"/#roadmap","wait":800},{"name":"3-missable","path":"/?filter=missable","wait":800},{"name":"4-spoiler","path":"/?spoilers=show","wait":800}]}

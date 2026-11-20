@@ -1,75 +1,54 @@
-// Progress state: which trophies are earned, kept in localStorage so the
-// tracker works fully offline. Also handles export/import as JSON text.
+// Vice Trophy Guide — localStorage-backed earned-state.
+(function () {
+  'use strict';
 
-// Versioned key: if the saved shape ever changes, bump the suffix so
-// old progress is ignored instead of misread.
-const KEY = 'gta6-trophy-tracker-progress-v1';
-
-export function createState() {
+  const KEY = 'vice-trophy-guide:earned:v1';
   let earned = new Set();
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) earned = new Set(parsed.map(String));
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      earned = new Set(raw ? JSON.parse(raw) : []);
+    } catch (e) {
+      earned = new Set();
     }
-  } catch {
-    earned = new Set();
+    return earned;
   }
 
   function save() {
     try {
-      localStorage.setItem(KEY, JSON.stringify([...earned].sort((a, b) => Number(a) - Number(b))));
-    } catch {
-      // Storage can be unavailable (private mode); the tracker still works in-memory.
+      localStorage.setItem(KEY, JSON.stringify([...earned]));
+    } catch (e) {
+      /* storage unavailable — keep in-memory state */
     }
   }
 
-  return {
-    has(id) {
-      return earned.has(String(id));
-    },
-    toggle(id) {
-      const key = String(id);
-      if (earned.has(key)) earned.delete(key);
-      else earned.add(key);
-      save();
-      return earned.has(key);
-    },
-    setAll(ids) {
-      earned = new Set(ids.map(String));
-      save();
-    },
-    clear() {
-      earned.clear();
-      save();
-    },
-    ids() {
-      return [...earned];
-    },
-    count() {
-      return earned.size;
-    },
-    exportJson() {
-      return JSON.stringify(
-        {
-          game: 'Grand Theft Auto VI',
-          exportedAt: new Date().toISOString(),
-          earned: [...earned].map(Number).sort((a, b) => a - b),
-        },
-        null,
-        2,
-      );
-    },
-    importJson(text, validIds) {
-      const parsed = JSON.parse(text);
-      const list = Array.isArray(parsed) ? parsed : parsed.earned;
-      if (!Array.isArray(list)) throw new Error('Expected a JSON array or an object with an "earned" array.');
-      const valid = validIds ? new Set([...validIds].map(String)) : null;
-      const next = list.map(String).filter((id) => !valid || valid.has(id));
-      earned = new Set(next);
-      save();
-      return earned.size;
-    },
-  };
-}
+  function toggle(id) {
+    if (earned.has(id)) earned.delete(id);
+    else earned.add(id);
+    save();
+    return earned.has(id);
+  }
+
+  function has(id) {
+    return earned.has(id);
+  }
+
+  function reset() {
+    earned.clear();
+    save();
+  }
+
+  function progress(total) {
+    const count = earned.size;
+    const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+    return { count, total, percent };
+  }
+
+  // Snapshot of earned ids (e.g. for debugging or future export).
+  function list() {
+    return [...earned];
+  }
+
+  window.TrophyState = { load, save, toggle, has, reset, progress, list };
+})();

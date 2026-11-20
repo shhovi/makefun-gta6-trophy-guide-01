@@ -1,88 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Offline checklist for all 55 GTA VI PlayStation 5 trophies, with guides, filters, spoiler protection, and a five-stage platinum roadmap.">
-<title>GTA VI Trophy Tracker</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vice Trophy Guide — GTA VI Trophy Tracker</title>
+  <meta name="description" content="Offline trophy tracker and platinum roadmap for a GTA VI-style game: 55 trophies, missable flags, spoiler-safe mode, localStorage progress." />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header class="topbar">
-  <h1>GTA VI Trophy Tracker</h1>
-  <p class="sub">Grand Theft Auto VI · PlayStation 5 · all 55 trophies, tracked offline in your browser.</p>
-</header>
-
-<main class="layout">
-  <section class="panel controls" aria-label="Controls">
-    <h2>Find trophies</h2>
-    <label>
-      Search
-      <input id="search" type="search" placeholder="Name or description…">
-    </label>
-    <label>
-      Kind
-      <select id="kind">
-        <option value="">All kinds</option>
-        <option value="story">Story</option>
-        <option value="missable">Missable</option>
-        <option value="collectibles">Collectibles</option>
-        <option value="activities">Activities</option>
-      </select>
-    </label>
-    <label>
-      Grade
-      <select id="grade">
-        <option value="">All grades</option>
-        <option value="platinum">Platinum</option>
-        <option value="gold">Gold</option>
-        <option value="silver">Silver</option>
-        <option value="bronze">Bronze</option>
-      </select>
-    </label>
-    <label>
-      Status
-      <select id="status">
-        <option value="">Earned and remaining</option>
-        <option value="earned">Earned only</option>
-        <option value="remaining">Remaining only</option>
-      </select>
-    </label>
-    <label class="check">
-      <input id="spoiler" type="checkbox" checked>
-      Hide spoilers for hidden trophies
-    </label>
-    <div class="viewrow" role="group" aria-label="View">
-      <button id="view-tracker" type="button" class="active">Tracker</button>
-      <button id="view-roadmap" type="button">Platinum roadmap</button>
+  <header class="site-header">
+    <h1>Vice Trophy Guide</h1>
+    <p class="subtitle">GTA VI trophy tracker &amp; platinum roadmap — Leonida</p>
+    <div class="progress-wrap" aria-label="Overall progress">
+      <div class="progress-bar"><div id="progress-fill"></div></div>
+      <span id="progress-text">0 / 55 — 0%</span>
     </div>
-    <div class="io">
-      <button id="export" type="button">Export progress</button>
-      <label class="import-label">
-        Import progress
-        <input id="import" type="file" accept="application/json">
-      </label>
-      <button id="reset" type="button">Reset all</button>
+  </header>
+
+  <nav class="controls" aria-label="Filters">
+    <div class="filter-group" role="group" aria-label="Trophy filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="earned">Earned</button>
+      <button class="filter-btn" data-filter="missing">Missing</button>
+      <button class="filter-btn" data-filter="missable">Missable</button>
+      <button class="filter-btn" data-filter="spoiler-safe">Spoiler-safe</button>
     </div>
-    <p id="io-msg" class="msg" role="status"></p>
-  </section>
+    <input id="search" type="search" placeholder="Search trophies…" aria-label="Search trophies" />
+    <label class="spoiler-toggle">
+      <input type="checkbox" id="show-spoilers" /> Show spoilers
+    </label>
+    <button id="reset" type="button">Reset progress</button>
+  </nav>
 
-  <section class="panel maincol">
-    <div id="summary" class="summary"></div>
-    <div id="list" class="list"></div>
-    <div id="roadmap" class="roadmap" hidden></div>
-  </section>
+  <main>
+    <section id="tracker" aria-label="Trophy tracker">
+      <h2>Trophy Tracker</h2>
+      <div id="trophy-grid" class="trophy-grid"></div>
+      <p id="empty" class="empty" hidden>No trophies match this filter.</p>
+    </section>
 
-  <aside class="panel detail" aria-label="Trophy detail">
-    <h2>Detail</h2>
-    <div id="detail"><p class="hint">Pick a trophy to see its guide and sources.</p></div>
-  </aside>
-</main>
+    <section id="roadmap" aria-label="Platinum roadmap">
+      <h2>Platinum Roadmap</h2>
+      <div id="roadmap-steps"></div>
+    </section>
+  </main>
 
-<footer class="foot">
-  <p>Progress is saved in this browser only (localStorage). Trophy names and descriptions follow the official list dated 2026-11-18.</p>
-</footer>
+  <footer class="site-footer">
+    <p>Fan guide — not affiliated with Rockstar Games. Progress is stored locally in your browser.</p>
+  </footer>
 
-<script type="module" src="src/main.js"></script>
+  <script src="src/data.js" defer></script>
+  <script src="src/state.js" defer></script>
+  <script src="src/render.js" defer></script>
+  <script src="src/main.js" defer></script>
 </body>
 </html>
