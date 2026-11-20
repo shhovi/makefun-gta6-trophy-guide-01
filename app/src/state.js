@@ -1,72 +1,75 @@
-// Tracker state: earned set + spoiler setting, saved in localStorage,
-// plus export / import of progress as a JSON file.
-// Versioned storage key so future schema changes never clobber old saves.
+// Progress state: which trophies are earned, kept in localStorage so the
+// tracker works fully offline. Also handles export/import as JSON text.
 
-const STORAGE_KEY = 'gtavi-trophy-tracker-v1';
+// Versioned key: if the saved shape ever changes, bump the suffix so
+// old progress is ignored instead of misread.
+const KEY = 'gta6-trophy-tracker-progress-v1';
 
-export function loadState() {
+export function createState() {
+  let earned = new Set();
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { earned: new Set(), hideSpoilers: false };
-    const parsed = JSON.parse(raw);
-    return {
-      earned: new Set(Array.isArray(parsed.earned) ? parsed.earned : []),
-      hideSpoilers: Boolean(parsed.hideSpoilers),
-    };
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) earned = new Set(parsed.map(String));
+    }
   } catch {
-    return { earned: new Set(), hideSpoilers: false };
+    earned = new Set();
   }
-}
 
-export function saveState(state) {
-  const payload = { earned: [...state.earned].sort((a, b) => a - b), hideSpoilers: state.hideSpoilers };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-}
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify([...earned].sort((a, b) => Number(a) - Number(b))));
+    } catch {
+      // Storage can be unavailable (private mode); the tracker still works in-memory.
+    }
+  }
 
-export function toggleEarned(state, id) {
-  if (state.earned.has(id)) state.earned.delete(id);
-  else state.earned.add(id);
-  saveState(state);
-}
-
-export function exportProgress(state) {
-  const payload = {
-    app: 'gtavi-trophy-tracker',
-    version: 1,
-    earned: [...state.earned].sort((a, b) => a - b),
-    hideSpoilers: state.hideSpoilers,
+  return {
+    has(id) {
+      return earned.has(String(id));
+    },
+    toggle(id) {
+      const key = String(id);
+      if (earned.has(key)) earned.delete(key);
+      else earned.add(key);
+      save();
+      return earned.has(key);
+    },
+    setAll(ids) {
+      earned = new Set(ids.map(String));
+      save();
+    },
+    clear() {
+      earned.clear();
+      save();
+    },
+    ids() {
+      return [...earned];
+    },
+    count() {
+      return earned.size;
+    },
+    exportJson() {
+      return JSON.stringify(
+        {
+          game: 'Grand Theft Auto VI',
+          exportedAt: new Date().toISOString(),
+          earned: [...earned].map(Number).sort((a, b) => a - b),
+        },
+        null,
+        2,
+      );
+    },
+    importJson(text, validIds) {
+      const parsed = JSON.parse(text);
+      const list = Array.isArray(parsed) ? parsed : parsed.earned;
+      if (!Array.isArray(list)) throw new Error('Expected a JSON array or an object with an "earned" array.');
+      const valid = validIds ? new Set([...validIds].map(String)) : null;
+      const next = list.map(String).filter((id) => !valid || valid.has(id));
+      earned = new Set(next);
+      save();
+      return earned.size;
+    },
   };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'gtavi-trophy-progress.json';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-export async function importProgress(state, file) {
-  const text = await file.text();
-  const parsed = JSON.parse(text);
-  if (!Array.isArray(parsed.earned)) throw new Error('not a progress file');
-  state.earned = new Set(parsed.earned.filter((n) => Number.isInteger(n)));
-  state.hideSpoilers = Boolean(parsed.hideSpoilers);
-  saveState(state);
-}
-
-// Fixed scenes for screenshots: deterministic earned sets per shot mode.
-export const SHOT_EARNED = {
-  tracker: [2, 3, 8, 15, 16, 21, 28, 35, 42, 46, 53, 55],
-  roadmap: [2, 3, 4, 8, 9, 21, 28, 46],
-  missable: [8, 44],
-  spoiler: [2, 3, 4, 5, 15, 21, 28, 35],
-};
-
-export function applyShotScene(state, shot) {
-  const ids = SHOT_EARNED[shot] || [];
-  state.earned = new Set(ids);
-  state.hideSpoilers = shot === 'spoiler';
-  saveState(state);
 }
