@@ -1,66 +1,85 @@
-import { loadGuide } from "./data.js";
-import { loadState, toggleEarned, progress, applyFilter } from "./state.js";
-import { renderTracker, renderRoadmap, renderProgress } from "./render.js";
+import { loadTrophies } from "./data.js";
+import { loadState, toggle, progress } from "./state.js";
+import { renderTrophies, renderRoadmap } from "./render.js";
 
-const params = new URLSearchParams(location.search);
-let filter = params.get("filter") === "missable" ? "missable" : "all";
-let spoilers = params.get("spoilers") === "show";
+const grid = document.getElementById("trophy-grid");
+const roadmapList = document.getElementById("roadmap-list");
+const emptyState = document.getElementById("empty-state");
+const progressFill = document.getElementById("progress-fill");
+const progressText = document.getElementById("progress-text");
+const tierFilter = document.getElementById("tier-filter");
+const missableOnly = document.getElementById("missable-only");
+const showSpoilers = document.getElementById("show-spoilers");
 
-const listEl = document.querySelector("#trophy-list");
-const roadmapEl = document.querySelector("#roadmap-list");
-const progressEl = document.querySelector("#progress-text");
-const buttons = [...document.querySelectorAll(".filters button")];
+let trophies = [];
+let state = loadState();
 
-function syncButtons() {
-  for (const b of buttons) {
-    const f = b.dataset.filter;
-    const active =
-      (f === "all" && filter === "all" && !spoilers) ||
-      (f === "missable" && filter === "missable") ||
-      (f === "spoilers" && spoilers);
-    b.classList.toggle("active", active);
+function currentFilters() {
+  return {
+    tier: tierFilter.value,
+    missableOnly: missableOnly.checked,
+    showSpoilers: showSpoilers.checked
+  };
+}
+
+function renderAll() {
+  const p = progress(trophies, state);
+  progressFill.style.width = p.percent + "%";
+  progressText.textContent =
+    p.done + " / " + p.total + " trophies · " + p.percent + "%" +
+    " · Platinum " + p.byTier.platinum.done + "/" + p.byTier.platinum.total +
+    " · Gold " + p.byTier.gold.done + "/" + p.byTier.gold.total +
+    " · Silver " + p.byTier.silver.done + "/" + p.byTier.silver.total +
+    " · Bronze " + p.byTier.bronze.done + "/" + p.byTier.bronze.total;
+
+  const visibleCount = renderTrophies(grid, trophies, state, currentFilters(), (id) => {
+    state = toggle(state, id);
+    renderAll();
+  });
+  emptyState.hidden = visibleCount !== 0;
+  renderRoadmap(roadmapList, trophies, state);
+}
+
+function applyUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("filter") === "missable") {
+    missableOnly.checked = true;
+  }
+  if (params.get("spoilers") === "show") {
+    showSpoilers.checked = true;
+  }
+  const tier = params.get("tier");
+  if (tier && ["platinum", "gold", "silver", "bronze"].includes(tier)) {
+    tierFilter.value = tier;
   }
 }
 
-// Keyboard shortcut: press "m" for missable filter, "s" to reveal spoilers, "a" for all.
-document.addEventListener("keydown", (e) => {
-  if (e.key === "m") { filter = "missable"; }
-  if (e.key === "s") { spoilers = true; filter = "all"; }
-  if (e.key === "a") { filter = "all"; spoilers = false; }
+tierFilter.addEventListener("change", renderAll);
+missableOnly.addEventListener("change", renderAll);
+showSpoilers.addEventListener("change", renderAll);
+
+// Keyboard shortcuts: "m" toggles missable-only, "s" toggles spoilers.
+document.addEventListener("keydown", (event) => {
+  if (event.target && ["INPUT", "SELECT", "TEXTAREA"].includes(event.target.tagName)) return;
+  if (event.key === "m") {
+    missableOnly.checked = !missableOnly.checked;
+    renderAll();
+  } else if (event.key === "s") {
+    showSpoilers.checked = !showSpoilers.checked;
+    renderAll();
+  }
 });
 
-async function boot() {
-  const guide = await loadGuide();
-  let state = loadState();
+applyUrlParams();
 
-  function draw() {
-    const visible = applyFilter(guide.trophies, { filter, spoilers });
-    renderTracker(listEl, visible, state, (id) => {
-      state = toggleEarned(id);
-      draw();
-    });
-    renderProgress(progressEl, progress(state, guide.total));
-    syncButtons();
-  }
-
-  renderRoadmap(roadmapEl, guide.roadmap);
-  draw();
-
-  for (const b of buttons) {
-    b.addEventListener("click", () => {
-      const f = b.dataset.filter;
-      if (f === "all") { filter = "all"; spoilers = false; }
-      if (f === "missable") { filter = "missable"; }
-      if (f === "spoilers") { spoilers = true; filter = "all"; }
-      draw();
-    });
-  }
-
-  if (location.hash === "#roadmap") {
-    document.querySelector("#roadmap")?.scrollIntoView({ behavior: "smooth" });
-  }
-}
-
-boot().catch((err) => {
-  listEl.textContent = `Could not load guide data: ${err.message}`;
-});
+loadTrophies()
+  .then((loaded) => {
+    trophies = loaded;
+    renderAll();
+    if (window.location.hash === "#roadmap") {
+      document.getElementById("roadmap").scrollIntoView();
+    }
+  })
+  .catch((err) => {
+    progressText.textContent = "Could not load trophies: " + err.message;
+  });

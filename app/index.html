@@ -1,39 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Fan-made GTA VI trophy tracker with 55 trophies, missable and spoiler filters, localStorage progress, and a six-step platinum roadmap.">
 <title>Vice Trophy Guide — GTA VI trophy tracker & platinum roadmap</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-<h1>Vice Trophy Guide</h1>
-<p class="subtitle">GTA VI trophy tracker & platinum roadmap</p>
-<div class="progress-wrap">
-<div id="progress-bar"><div id="progress-fill"></div></div>
-<p id="progress-text">0 / 55 earned</p>
-</div>
-<nav class="filters" aria-label="Filters">
-<button data-filter="all" class="active">All</button>
-<button data-filter="missable">Missable</button>
-<button data-filter="spoilers">Spoilers</button>
-</nav>
+<header class="site-header">
+  <h1>Vice Trophy Guide</h1>
+  <p class="tagline">GTA VI trophy tracker &amp; platinum roadmap — 55 fan-made placeholder trophies for Leonida.</p>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div id="progress-fill"></div></div>
+    <p id="progress-text">Loading trophies…</p>
+  </div>
+  <form class="controls" id="controls">
+    <label>
+      Tier
+      <select id="tier-filter">
+        <option value="all">All tiers</option>
+        <option value="platinum">Platinum</option>
+        <option value="gold">Gold</option>
+        <option value="silver">Silver</option>
+        <option value="bronze">Bronze</option>
+      </select>
+    </label>
+    <label class="check">
+      <input type="checkbox" id="missable-only">
+      Missable only
+    </label>
+    <label class="check">
+      <input type="checkbox" id="show-spoilers">
+      Show spoilers
+    </label>
+  </form>
 </header>
+
 <main>
-<section id="tracker">
-<h2>Trophy Tracker</h2>
-<div id="trophy-list"></div>
-</section>
-<section id="roadmap">
-<h2>Platinum Roadmap</h2>
-<ol id="roadmap-list"></ol>
-</section>
+  <section id="roadmap" class="roadmap">
+    <h2>Platinum roadmap</h2>
+    <p class="roadmap-intro">Five phases from first steps in Leonida to final cleanup. Check trophies off as you earn them — progress is saved in your browser.</p>
+    <div id="roadmap-list"></div>
+  </section>
+
+  <section class="tracker">
+    <h2>Trophy tracker</h2>
+    <div id="trophy-grid" class="trophy-grid"></div>
+    <p id="empty-state" class="empty-state" hidden>No trophies match the current filters.</p>
+  </section>
 </main>
-<footer>
-<p>Fan-made guide for a fictional trophy list. Progress is saved locally in your browser.</p>
+
+<footer class="site-footer">
+  <p>Fan-made tracker. Trophy names are original placeholders for an unreleased game — not official or leaked lists.</p>
 </footer>
+
 <script type="module" src="src/main.js"></script>
+<noscript><p style="text-align:center">Vice Trophy Guide needs JavaScript to track your trophies.</p></noscript>
 </body>
 </html>

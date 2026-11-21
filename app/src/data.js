@@ -1,18 +1,18 @@
-export const TIERS = {
-  platinum: { label: "Platinum", color: "#e8f0ff" },
-  gold: { label: "Gold", color: "#ffc93c" },
-  silver: { label: "Silver", color: "#c0c8d8" },
-  bronze: { label: "Bronze", color: "#cd7f32" },
-};
+export const TIERS = ["platinum", "gold", "silver", "bronze"];
 
-export const TIER_ORDER = { platinum: 0, gold: 1, silver: 2, bronze: 3 };
+export const CATEGORIES = ["story", "collectible", "combat", "exploration", "side", "online"];
 
-export function sortByTier(trophies) {
-  return [...trophies].sort((a, b) => (TIER_ORDER[a.tier] ?? 99) - (TIER_ORDER[b.tier] ?? 99));
+export const PHASES = [1, 2, 3, 4, 5];
+
+export function byPhase(trophies, phase) {
+  return trophies.filter((t) => t.phase === phase);
 }
 
-export async function loadGuide() {
-  const res = await fetch("data/trophies.json");
-  if (!res.ok) throw new Error(`Failed to load trophies: ${res.status}`);
-  return res.json();
+export async function loadTrophies() {
+  const res = await fetch("../data/trophies.json");
+  if (!res.ok) {
+    throw new Error("Failed to load trophies: " + res.status);
+  }
+  const data = await res.json();
+  return Array.isArray(data.trophies) ? data.trophies : [];
 }

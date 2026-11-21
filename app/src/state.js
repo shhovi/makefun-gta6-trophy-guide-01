@@ -1,45 +1,57 @@
-const KEY = "vice-trophy-guide-v1";
+const STORAGE_KEY = "vice-trophy-guide-checked-v1";
 
 export function loadState() {
   try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? JSON.parse(raw) : { earned: {} };
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
   } catch {
-    return { earned: {} };
+    return {};
   }
 }
 
-function save(state) {
-  localStorage.setItem(KEY, JSON.stringify(state));
+export function saveState(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Storage may be unavailable (private mode); state still works in memory.
+  }
 }
 
-export function toggleEarned(id) {
-  const state = loadState();
-  state.earned[id] = !state.earned[id];
-  if (!state.earned[id]) delete state.earned[id];
-  save(state);
-  return state;
-}
-
-export function isEarned(state, id) {
-  return Boolean(state?.earned?.[id]);
-}
-
-export function progress(state, total) {
-  const earned = Object.values(state?.earned || {}).filter(Boolean).length;
-  const pct = total ? Math.round((earned / total) * 100) : 0;
-  return { earned, total, pct };
+export function toggle(state, id) {
+  const next = { ...state };
+  if (next[id]) {
+    delete next[id];
+  } else {
+    next[id] = true;
+  }
+  saveState(next);
+  return next;
 }
 
 export function resetState() {
-  localStorage.removeItem(KEY);
-  return { earned: {} };
+  saveState({});
+  return {};
 }
 
-export function applyFilter(trophies, { filter = "all", spoilers = false } = {}) {
-  return trophies.filter((t) => {
-    if (filter === "missable" && !t.missable) return false;
-    if (!spoilers && t.spoiler) return false;
-    return true;
-  });
+export function progress(trophies, state) {
+  const byTier = {
+    platinum: { done: 0, total: 0 },
+    gold: { done: 0, total: 0 },
+    silver: { done: 0, total: 0 },
+    bronze: { done: 0, total: 0 }
+  };
+  let done = 0;
+  for (const trophy of trophies) {
+    const bucket = byTier[trophy.tier];
+    if (bucket) bucket.total += 1;
+    if (state[trophy.id]) {
+      done += 1;
+      if (bucket) bucket.done += 1;
+    }
+  }
+  const total = trophies.length;
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+  return { done, total, percent, byTier };
 }

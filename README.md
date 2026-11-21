@@ -1,38 +1,43 @@
 # Vice Trophy Guide — GTA VI trophy tracker & platinum roadmap
 
-[![make.fun · gta6-trophy-guide-01](https://make.fun/badge/gta6-trophy-guide-01.svg)](https://make.fun/bounty/gta6-trophy-guide-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-trophy-guide-01)
-[![rank](https://make.fun/badge/gta6-trophy-guide-01/shhovi/makefun-gta6-trophy-guide-01/rank.svg)](https://make.fun/bounty/gta6-trophy-guide-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-trophy-guide-01)
-[![reward](https://make.fun/badge/gta6-trophy-guide-01/shhovi/makefun-gta6-trophy-guide-01/reward.svg)](https://make.fun/bounty/gta6-trophy-guide-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-trophy-guide-01)
+[![make.fun · gta6-trophy-guide-01](https://make.fun/badge/gta6-trophy-guide-01.svg)](https://make.fun/bounty/gta6-trophy-guide-01)
+[![rank](https://make.fun/badge/gta6-trophy-guide-01/shhovi/makefun-gta6-trophy-guide-01/rank.svg)](https://make.fun/bounty/gta6-trophy-guide-01/leaderboard)
+[![reward](https://make.fun/badge/gta6-trophy-guide-01/shhovi/makefun-gta6-trophy-guide-01/reward.svg)](https://make.fun/bounty/gta6-trophy-guide-01)
 
-## What it is
+Built for [make.fun](https://make.fun) — a fan-made trophy tracker and platinum roadmap for GTA VI.
 
-A fan-made tracker for a fictional 55-trophy list set in Vice City and Leonida. Tick trophies off as you earn them, watch the progress bar fill, and follow a six-step platinum roadmap that runs from story first through collectibles cleanup to the final sweep. Filters let you focus on missable trophies or reveal spoiler trophies when you are ready, and your progress is saved in the browser with localStorage so it survives reloads.
+## What it does
 
-**Platinum route:** story first with a missables watch, then collectibles cleanup, side activities, challenges, and a final sweep with the tracker.
+Vice Trophy Guide tracks **55 trophies: 1 platinum, 8 gold, 18 silver, 28 bronze**.
 
-## Run it
+- **Tracker with check-off state** — tick trophies as you earn them; progress is saved in your browser (localStorage) and shown as a completion bar plus per-tier counts.
+- **Platinum roadmap phases** — trophies are grouped into 5 phases (from first steps in Leonida to final cleanup) so you can follow a sensible platinum order.
+- **Missable filter** — instantly narrow the list to trophies that can be permanently missed, so you never lock yourself out of the platinum.
+- **Spoiler toggle** — story trophy names stay blurred until you choose to reveal them.
+- **Tier filter** — view platinum, gold, silver, or bronze trophies on their own.
 
-```
-node main.ts
-```
+## How to run
 
-Then open http://localhost:4173 in your browser.
+- `node main.ts` — renders the static outputs (snapshot HTML, `summary.json`, and the four screenshots) into `MAKEFUN_OUTPUT_DIR` (default `out/`), then exits. This is the fast, non-interactive grade run.
+- `node serve.ts` — starts a tiny static server for the interactive app in `app/` on port `PORT` (default 3000). Open the printed URL in a browser to use the tracker.
 
-## Screenshots
+## Roadmap phases
 
-- `screenshots/1-tracker.jpg` — the main tracker list with the progress bar and trophy rows.
-- `screenshots/2-roadmap.jpg` — the six-step platinum roadmap view.
-- `screenshots/3-missable.jpg` — only the missable trophies.
-- `screenshots/4-spoiler.jpg` — the full list with spoiler trophies revealed.
+1. **Phase 1 — First steps in Leonida:** prologue, first safehouses, early collectibles.
+2. **Phase 2 — Settle in and explore:** districts, vehicles, companion and side activities.
+3. **Phase 3 — Mid-game push:** heists, races, and the story's turning points (mind the missables).
+4. **Phase 4 — Late-game cleanup:** remaining collectibles, combat challenges, online milestones.
+5. **Phase 5 — Platinum finish:** businesses, top ranks, and the platinum itself.
 
-Regenerate them deterministically with:
+## A note on trophy names
 
-```
-node main.ts --shots
-```
+GTA VI is unreleased and has no official trophy list. Every trophy name and description in this app is an **original fan-made placeholder** invented for this tracker (Vice City / Leonida flavored) — none of it comes from leaks or official sources. Swap in the real list when the game ships; the tracker, roadmap, and filters work the same.
 
-## Data
+## Layout
 
-All guide content lives in `app/data/trophies.json`. The document has a `game` title, a `total` count, a `trophies` array (each entry with `id`, `name`, `tier`, `description`, `missable`, `spoiler`, `chapter`, and `how`), and a `roadmap` array of ordered steps with `step`, `title`, and `detail`.
-
-Built for [make.fun](https://make.fun). MIT licensed — see `LICENSE`.
+- `app/index.html` — single-page app shell
+- `app/style.css` — dark Vice-City-neon theme
+- `app/src/` — data loading, state, rendering, and wiring (ES modules, no dependencies)
+- `app/data/trophies.json` — the 55 placeholder trophies
+- `main.ts` — fast render run (static snapshot + summary + screenshots)
+- `serve.ts` — manual static server (never imported by `main.ts`)
