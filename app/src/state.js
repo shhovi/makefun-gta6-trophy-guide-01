@@ -1,54 +1,45 @@
-// Vice Trophy Guide — localStorage-backed earned-state.
-(function () {
-  'use strict';
+const KEY = "vice-trophy-guide-v1";
 
-  const KEY = 'vice-trophy-guide:earned:v1';
-  let earned = new Set();
-
-  function load() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      earned = new Set(raw ? JSON.parse(raw) : []);
-    } catch (e) {
-      earned = new Set();
-    }
-    return earned;
+export function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : { earned: {} };
+  } catch {
+    return { earned: {} };
   }
+}
 
-  function save() {
-    try {
-      localStorage.setItem(KEY, JSON.stringify([...earned]));
-    } catch (e) {
-      /* storage unavailable — keep in-memory state */
-    }
-  }
+function save(state) {
+  localStorage.setItem(KEY, JSON.stringify(state));
+}
 
-  function toggle(id) {
-    if (earned.has(id)) earned.delete(id);
-    else earned.add(id);
-    save();
-    return earned.has(id);
-  }
+export function toggleEarned(id) {
+  const state = loadState();
+  state.earned[id] = !state.earned[id];
+  if (!state.earned[id]) delete state.earned[id];
+  save(state);
+  return state;
+}
 
-  function has(id) {
-    return earned.has(id);
-  }
+export function isEarned(state, id) {
+  return Boolean(state?.earned?.[id]);
+}
 
-  function reset() {
-    earned.clear();
-    save();
-  }
+export function progress(state, total) {
+  const earned = Object.values(state?.earned || {}).filter(Boolean).length;
+  const pct = total ? Math.round((earned / total) * 100) : 0;
+  return { earned, total, pct };
+}
 
-  function progress(total) {
-    const count = earned.size;
-    const percent = total > 0 ? Math.round((count / total) * 100) : 0;
-    return { count, total, percent };
-  }
+export function resetState() {
+  localStorage.removeItem(KEY);
+  return { earned: {} };
+}
 
-  // Snapshot of earned ids (e.g. for debugging or future export).
-  function list() {
-    return [...earned];
-  }
-
-  window.TrophyState = { load, save, toggle, has, reset, progress, list };
-})();
+export function applyFilter(trophies, { filter = "all", spoilers = false } = {}) {
+  return trophies.filter((t) => {
+    if (filter === "missable" && !t.missable) return false;
+    if (!spoilers && t.spoiler) return false;
+    return true;
+  });
+}

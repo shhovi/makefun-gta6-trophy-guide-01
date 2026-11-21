@@ -1,57 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vice Trophy Guide — GTA VI Trophy Tracker</title>
-  <meta name="description" content="Offline trophy tracker and platinum roadmap for a GTA VI-style game: 55 trophies, missable flags, spoiler-safe mode, localStorage progress." />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Fan-made GTA VI trophy tracker with 55 trophies, missable and spoiler filters, localStorage progress, and a six-step platinum roadmap.">
+<title>Vice Trophy Guide — GTA VI trophy tracker & platinum roadmap</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1>Vice Trophy Guide</h1>
-    <p class="subtitle">GTA VI trophy tracker &amp; platinum roadmap — Leonida</p>
-    <div class="progress-wrap" aria-label="Overall progress">
-      <div class="progress-bar"><div id="progress-fill"></div></div>
-      <span id="progress-text">0 / 55 — 0%</span>
-    </div>
-  </header>
-
-  <nav class="controls" aria-label="Filters">
-    <div class="filter-group" role="group" aria-label="Trophy filters">
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="earned">Earned</button>
-      <button class="filter-btn" data-filter="missing">Missing</button>
-      <button class="filter-btn" data-filter="missable">Missable</button>
-      <button class="filter-btn" data-filter="spoiler-safe">Spoiler-safe</button>
-    </div>
-    <input id="search" type="search" placeholder="Search trophies…" aria-label="Search trophies" />
-    <label class="spoiler-toggle">
-      <input type="checkbox" id="show-spoilers" /> Show spoilers
-    </label>
-    <button id="reset" type="button">Reset progress</button>
-  </nav>
-
-  <main>
-    <section id="tracker" aria-label="Trophy tracker">
-      <h2>Trophy Tracker</h2>
-      <div id="trophy-grid" class="trophy-grid"></div>
-      <p id="empty" class="empty" hidden>No trophies match this filter.</p>
-    </section>
-
-    <section id="roadmap" aria-label="Platinum roadmap">
-      <h2>Platinum Roadmap</h2>
-      <div id="roadmap-steps"></div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <p>Fan guide — not affiliated with Rockstar Games. Progress is stored locally in your browser.</p>
-  </footer>
-
-  <script src="src/data.js" defer></script>
-  <script src="src/state.js" defer></script>
-  <script src="src/render.js" defer></script>
-  <script src="src/main.js" defer></script>
+<header>
+<h1>Vice Trophy Guide</h1>
+<p class="subtitle">GTA VI trophy tracker & platinum roadmap</p>
+<div class="progress-wrap">
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<p id="progress-text">0 / 55 earned</p>
+</div>
+<nav class="filters" aria-label="Filters">
+<button data-filter="all" class="active">All</button>
+<button data-filter="missable">Missable</button>
+<button data-filter="spoilers">Spoilers</button>
+</nav>
+</header>
+<main>
+<section id="tracker">
+<h2>Trophy Tracker</h2>
+<div id="trophy-list"></div>
+</section>
+<section id="roadmap">
+<h2>Platinum Roadmap</h2>
+<ol id="roadmap-list"></ol>
+</section>
+</main>
+<footer>
+<p>Fan-made guide for a fictional trophy list. Progress is saved locally in your browser.</p>
+</footer>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>

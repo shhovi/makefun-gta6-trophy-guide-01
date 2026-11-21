@@ -1,148 +1,106 @@
-/* Vice Trophy Guide — dark Leonida theme */
 :root {
-  --bg: #0b0e14;
-  --surface: #151a24;
-  --surface-2: #1c2331;
-  --text: #e8ecf3;
-  --muted: #9aa5b5;
-  --accent: #ff5da2;
-  --bronze: #b08d57;
-  --silver: #c0c0c0;
-  --gold: #ffd700;
-  --platinum: #7ee0ff;
+  --bg: #0b0e1a;
+  --panel: #141a2e;
+  --text: #e8ecf5;
+  --muted: #9aa3b8;
+  --pink: #ff2e88;
+  --teal: #00e5c0;
+  --platinum: #e8f0ff;
+  --gold: #ffc93c;
+  --silver: #c0c8d8;
+  --bronze: #cd7f32;
 }
-
 * { box-sizing: border-box; }
-
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
 }
-
-.site-header {
-  padding: 2rem 1.5rem 1rem;
+header {
+  padding: 2rem 1rem 1rem;
   text-align: center;
-  background: linear-gradient(180deg, #141b2b, var(--bg));
+  background: linear-gradient(180deg, #1a1033 0%, var(--bg) 100%);
 }
-
-.site-header h1 { margin: 0; font-size: 2.2rem; letter-spacing: 0.02em; }
-.subtitle { color: var(--muted); margin: 0.4rem 0 1.2rem; }
-
-.progress-wrap { max-width: 560px; margin: 0 auto; }
-.progress-bar {
-  height: 12px;
-  background: var(--surface-2);
+h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  letter-spacing: .04em;
+  color: var(--pink);
+  text-shadow: 0 0 18px rgba(255,46,136,.45);
+}
+.subtitle { color: var(--teal); margin: .25rem 0 1rem; }
+.progress-wrap { max-width: 640px; margin: 0 auto; }
+#progress-bar {
+  height: 14px;
+  background: #232a44;
   border-radius: 999px;
   overflow: hidden;
+  border: 1px solid #2e3757;
 }
 #progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--accent), var(--platinum));
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--pink), var(--teal));
+  transition: width .3s ease;
 }
-#progress-text { display: block; margin-top: 0.4rem; color: var(--muted); font-size: 0.9rem; }
-
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem 1.5rem;
-  position: sticky;
-  top: 0;
-  background: rgba(11, 14, 20, 0.92);
-  backdrop-filter: blur(6px);
-  z-index: 10;
-}
-
-.filter-btn, #reset {
-  background: var(--surface-2);
+#progress-text { color: var(--muted); font-size: .9rem; }
+.filters { margin: 1rem 0 .5rem; display: flex; gap: .5rem; justify-content: center; flex-wrap: wrap; }
+.filters button {
+  background: var(--panel);
   color: var(--text);
-  border: 1px solid #2a3347;
+  border: 1px solid #2e3757;
+  padding: .45rem 1rem;
   border-radius: 999px;
-  padding: 0.4rem 0.9rem;
   cursor: pointer;
 }
-.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-#reset:hover { border-color: var(--accent); }
-
-#search {
-  background: var(--surface-2);
-  border: 1px solid #2a3347;
-  border-radius: 999px;
-  color: var(--text);
-  padding: 0.45rem 1rem;
-  min-width: 220px;
+.filters button.active {
+  border-color: var(--pink);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255,46,136,.35);
 }
-
-.spoiler-toggle { color: var(--muted); font-size: 0.9rem; }
-
-main { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2.5rem; }
-
-.trophy-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
+main { max-width: 860px; margin: 0 auto; padding: 1rem; }
+section { margin-bottom: 2.5rem; }
+h2 { color: var(--teal); border-bottom: 1px solid #2e3757; padding-bottom: .4rem; }
+.trophy {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  background: var(--panel);
+  border-left: 6px solid var(--bronze);
+  border-radius: 8px;
+  padding: .75rem 1rem;
+  margin-bottom: .6rem;
 }
-
-.card {
-  background: var(--surface);
-  border: 1px solid #232c40;
-  border-radius: 12px;
-  padding: 1rem;
-}
-.card.earned { border-color: var(--platinum); opacity: 0.85; }
-
-.card-head { display: flex; gap: 0.5rem; align-items: center; cursor: pointer; font-weight: 600; }
-.trophy-desc { color: var(--muted); font-size: 0.92rem; margin: 0.5rem 0; }
-.card-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
-
+.trophy.platinum { border-left-color: var(--platinum); }
+.trophy.gold { border-left-color: var(--gold); }
+.trophy.silver { border-left-color: var(--silver); }
+.trophy.bronze { border-left-color: var(--bronze); }
+.trophy.earned { opacity: .55; }
+.trophy:hover { background: #1a2140; }
+.filters button:hover { border-color: var(--teal); }
+.trophy.earned .trophy-name::after { content: " ✓"; color: var(--teal); }
+.trophy-name { font-weight: 700; }
+.trophy-desc { color: var(--muted); font-size: .92rem; }
+.trophy-how { color: var(--muted); font-size: .85rem; font-style: italic; }
 .badge {
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: .7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  color: #10131a;
+  letter-spacing: .06em;
+  padding: .1rem .45rem;
+  border-radius: 4px;
+  background: #232a44;
+  color: var(--text);
+  white-space: nowrap;
 }
-.badge-bronze { background: var(--bronze); }
-.badge-silver { background: var(--silver); }
-.badge-gold { background: var(--gold); }
-.badge-platinum { background: var(--platinum); }
-
-.category { color: var(--muted); font-size: 0.82rem; }
-.tag { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 999px; }
-.tag-missable { background: #5b2a1e; color: #ffb59d; }
-.tag-spoiler { background: #2e2450; color: #c9b8ff; }
-
-.spoiler-blur .trophy-name,
-.spoiler-blur .trophy-desc,
-.spoiler-blur { filter: blur(5px); user-select: none; }
-.card.spoiler-blur { filter: none; }
-.card.spoiler-blur .card-meta { filter: none; }
-
-.roadmap-step {
-  background: var(--surface);
-  border: 1px solid #232c40;
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1rem;
-}
-.roadmap-step ul { margin: 0.5rem 0 0; padding-left: 1.1rem; }
-.roadmap-step li.done { text-decoration: line-through; color: var(--muted); }
-
-.empty { color: var(--muted); text-align: center; padding: 2rem 0; }
-.site-footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 1.5rem; }
-
+.tag { font-size: .72rem; padding: .1rem .4rem; border-radius: 4px; margin-left: .35rem; }
+.tag.missable { background: #5c1a33; color: #ff8fb8; }
+.tag.spoiler { background: #143d38; color: var(--teal); }
+#roadmap-list li { margin-bottom: .9rem; background: var(--panel); padding: .75rem 1rem; border-radius: 8px; }
+#roadmap-list .step-title { font-weight: 700; color: var(--pink); }
+footer { text-align: center; color: var(--muted); padding: 2rem 1rem; font-size: .85rem; }
 @media (max-width: 640px) {
-  .site-header h1 { font-size: 1.6rem; }
-  .controls { justify-content: stretch; }
-  #search { flex: 1 1 100%; }
-  .trophy-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 1.6rem; }
+  .trophy { flex-direction: column; gap: .35rem; }
 }

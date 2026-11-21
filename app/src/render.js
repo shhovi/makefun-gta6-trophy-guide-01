@@ -1,82 +1,74 @@
-// Vice Trophy Guide — DOM rendering for tracker, roadmap, and progress.
-(function () {
-  'use strict';
+import { TIERS } from "./data.js";
+import { isEarned } from "./state.js";
 
-  const STEP_TITLES = {
-    1: 'Step 1 — Story',
-    2: 'Step 2 — Missables cleanup',
-    3: 'Step 3 — Collectibles',
-    4: 'Step 4 — Activities',
-    5: 'Step 5 — Online & final',
-  };
-
-  function escapeHtml(s) {
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+export function renderTracker(container, trophies, state, onToggle) {
+  container.innerHTML = "";
+  if (trophies.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "trophy-desc";
+    empty.textContent = "No trophies match this filter yet.";
+    container.append(empty);
+    return;
   }
+  for (const t of trophies) {
+    const row = document.createElement("article");
+    row.className = `trophy ${t.tier}` + (isEarned(state, t.id) ? " earned" : "");
 
-  function trophyCard(t, opts) {
-    const earned = window.TrophyState.has(t.id);
-    const blurred = t.spoiler && !opts.showSpoilers;
-    const tags = [
-      t.missable ? '<span class="tag tag-missable">Missable</span>' : '',
-      t.spoiler ? '<span class="tag tag-spoiler">Spoiler</span>' : '',
-    ].join('');
-    return (
-      '<article class="card' + (earned ? ' earned' : '') + (blurred ? ' spoiler-blur' : '') + '" data-id="' + t.id + '">' +
-      '<label class="card-head">' +
-      '<input type="checkbox" class="trophy-check" data-id="' + t.id + '"' + (earned ? ' checked' : '') + ' />' +
-      '<span class="trophy-name">' + escapeHtml(t.name) + '</span>' +
-      '</label>' +
-      '<p class="trophy-desc">' + escapeHtml(t.description) + '</p>' +
-      '<div class="card-meta">' +
-      '<span class="badge badge-' + t.type + '">' + t.type + '</span>' +
-      '<span class="category">' + escapeHtml(t.category) + '</span>' + tags +
-      '</div></article>'
-    );
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = isEarned(state, t.id);
+    cb.setAttribute("aria-label", `Mark ${t.name} earned`);
+    cb.addEventListener("change", () => onToggle(t.id));
+
+    const body = document.createElement("div");
+    const head = document.createElement("div");
+    const name = document.createElement("span");
+    name.className = "trophy-name";
+    name.textContent = t.name;
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = TIERS[t.tier]?.label || t.tier;
+    head.append(name, " ", badge);
+    if (t.missable) {
+      const tag = document.createElement("span");
+      tag.className = "tag missable";
+      tag.textContent = "Missable";
+      head.append(tag);
+    }
+    if (t.spoiler) {
+      const tag = document.createElement("span");
+      tag.className = "tag spoiler";
+      tag.textContent = "Spoiler";
+      head.append(tag);
+    }
+    const desc = document.createElement("div");
+    desc.className = "trophy-desc";
+    desc.textContent = t.description;
+    const how = document.createElement("div");
+    how.className = "trophy-how";
+    how.textContent = t.how;
+    body.append(head, desc, how);
+    row.append(cb, body);
+    container.append(row);
   }
+}
 
-  function renderTracker(trophies, opts) {
-    const grid = document.getElementById('trophy-grid');
-    const empty = document.getElementById('empty');
-    grid.innerHTML = trophies.map((t) => trophyCard(t, opts)).join('');
-    empty.hidden = trophies.length > 0;
+export function renderRoadmap(container, steps) {
+  container.innerHTML = "";
+  for (const s of steps) {
+    const li = document.createElement("li");
+    const title = document.createElement("span");
+    title.className = "step-title";
+    title.textContent = `Step ${s.step}: ${s.title}`;
+    const detail = document.createElement("div");
+    detail.textContent = s.detail;
+    li.append(title, detail);
+    container.append(li);
   }
+}
 
-  function renderRoadmap(trophies, opts) {
-    const wrap = document.getElementById('roadmap-steps');
-    const groups = window.TrophyData.byStep(trophies);
-    wrap.innerHTML = Object.keys(groups)
-      .sort((a, b) => a - b)
-      .map((step) => {
-        const items = groups[step]
-          .map((t) => {
-            const done = window.TrophyState.has(t.id);
-            const blurred = t.spoiler && !opts.showSpoilers;
-            return (
-              '<li class="' + (done ? 'done' : '') + (blurred ? ' spoiler-blur' : '') + '">' +
-              '<span class="badge badge-' + t.type + '">' + t.type + '</span> ' +
-              escapeHtml(t.name) +
-              (t.missable ? ' <span class="tag tag-missable">Missable</span>' : '') +
-              '</li>'
-            );
-          })
-          .join('');
-        return '<div class="roadmap-step"><h3>' + (STEP_TITLES[step] || 'Step ' + step) + '</h3><ul>' + items + '</ul></div>';
-      })
-      .join('');
-  }
-
-  function renderProgress(total) {
-    const p = window.TrophyState.progress(total);
-    document.getElementById('progress-fill').style.width = p.percent + '%';
-    document.getElementById('progress-text').textContent =
-      p.count + ' / ' + p.total + ' — ' + p.percent + '%' +
-      (p.total > 0 && p.count === p.total ? ' 🏆 Platinum!' : '');
-  }
-
-  window.TrophyRender = { renderTracker, renderRoadmap, renderProgress };
-})();
+export function renderProgress(el, prog) {
+  const fill = document.querySelector("#progress-fill");
+  if (fill) fill.style.width = `${prog.pct}%`;
+  if (el) el.textContent = `${prog.earned} / ${prog.total} earned (${prog.pct}%)`;
+}

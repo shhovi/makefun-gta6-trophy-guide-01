@@ -1,1 +1,24 @@
-{"shots":[{"name":"1-tracker","path":"/","wait":800},{"name":"2-roadmap","path":"/#roadmap","wait":800},{"name":"3-missable","path":"/?filter=missable","wait":800},{"name":"4-spoiler","path":"/?spoilers=show","wait":800}]}
+{
+  "shots": [
+    {
+      "name": "1-tracker",
+      "path": "/",
+      "wait": 800
+    },
+    {
+      "name": "2-roadmap",
+      "path": "/#roadmap",
+      "wait": 800
+    },
+    {
+      "name": "3-missable",
+      "path": "/?filter=missable",
+      "wait": 800
+    },
+    {
+      "name": "4-spoiler",
+      "path": "/?spoilers=show",
+      "wait": 800
+    }
+  ]
+}

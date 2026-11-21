@@ -1,94 +1,66 @@
-// Vice Trophy Guide — app wiring: filters, search, spoiler toggle, reset.
-(function () {
-  'use strict';
+import { loadGuide } from "./data.js";
+import { loadState, toggleEarned, progress, applyFilter } from "./state.js";
+import { renderTracker, renderRoadmap, renderProgress } from "./render.js";
 
-  const ui = {
-    filter: 'all',
-    query: '',
-    showSpoilers: false,
-  };
+const params = new URLSearchParams(location.search);
+let filter = params.get("filter") === "missable" ? "missable" : "all";
+let spoilers = params.get("spoilers") === "show";
 
-  let all = [];
+const listEl = document.querySelector("#trophy-list");
+const roadmapEl = document.querySelector("#roadmap-list");
+const progressEl = document.querySelector("#progress-text");
+const buttons = [...document.querySelectorAll(".filters button")];
 
-  function applyFilter(list) {
-    let out = list;
-    if (ui.query.trim()) out = window.TrophyData.search(out, ui.query);
-    return out.filter((t) => {
-      switch (ui.filter) {
-        case 'earned': return window.TrophyState.has(t.id);
-        case 'missing': return !window.TrophyState.has(t.id);
-        case 'missable': return t.missable;
-        case 'spoiler-safe': return !t.spoiler;
-        default: return true;
-      }
+function syncButtons() {
+  for (const b of buttons) {
+    const f = b.dataset.filter;
+    const active =
+      (f === "all" && filter === "all" && !spoilers) ||
+      (f === "missable" && filter === "missable") ||
+      (f === "spoilers" && spoilers);
+    b.classList.toggle("active", active);
+  }
+}
+
+// Keyboard shortcut: press "m" for missable filter, "s" to reveal spoilers, "a" for all.
+document.addEventListener("keydown", (e) => {
+  if (e.key === "m") { filter = "missable"; }
+  if (e.key === "s") { spoilers = true; filter = "all"; }
+  if (e.key === "a") { filter = "all"; spoilers = false; }
+});
+
+async function boot() {
+  const guide = await loadGuide();
+  let state = loadState();
+
+  function draw() {
+    const visible = applyFilter(guide.trophies, { filter, spoilers });
+    renderTracker(listEl, visible, state, (id) => {
+      state = toggleEarned(id);
+      draw();
+    });
+    renderProgress(progressEl, progress(state, guide.total));
+    syncButtons();
+  }
+
+  renderRoadmap(roadmapEl, guide.roadmap);
+  draw();
+
+  for (const b of buttons) {
+    b.addEventListener("click", () => {
+      const f = b.dataset.filter;
+      if (f === "all") { filter = "all"; spoilers = false; }
+      if (f === "missable") { filter = "missable"; }
+      if (f === "spoilers") { spoilers = true; filter = "all"; }
+      draw();
     });
   }
 
-  function render() {
-    const visible = applyFilter(all);
-    window.TrophyRender.renderTracker(visible, ui);
-    window.TrophyRender.renderRoadmap(all, ui);
-    window.TrophyRender.renderProgress(all.length);
+  if (location.hash === "#roadmap") {
+    document.querySelector("#roadmap")?.scrollIntoView({ behavior: "smooth" });
   }
+}
 
-  function readUrlParams() {
-    const params = new URLSearchParams(location.search);
-    const f = params.get('filter');
-    if (f) ui.filter = f;
-    if (params.get('spoilers') === 'show') ui.showSpoilers = true;
-    document.querySelectorAll('.filter-btn').forEach((b) => {
-      b.classList.toggle('active', b.dataset.filter === ui.filter);
-    });
-    document.getElementById('show-spoilers').checked = ui.showSpoilers;
-  }
-
-  function wire() {
-    document.querySelectorAll('.filter-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        ui.filter = btn.dataset.filter;
-        document.querySelectorAll('.filter-btn').forEach((b) => b.classList.toggle('active', b === btn));
-        render();
-      });
-    });
-
-    document.getElementById('search').addEventListener('input', (e) => {
-      ui.query = e.target.value;
-      render();
-    });
-
-    document.getElementById('show-spoilers').addEventListener('change', (e) => {
-      ui.showSpoilers = e.target.checked;
-      render();
-    });
-
-    document.getElementById('reset').addEventListener('click', () => {
-      if (confirm('Reset all trophy progress?')) {
-        window.TrophyState.reset();
-        render();
-      }
-    });
-
-    document.getElementById('trophy-grid').addEventListener('change', (e) => {
-      if (e.target.classList.contains('trophy-check')) {
-        window.TrophyState.toggle(e.target.dataset.id);
-        render();
-      }
-    });
-  }
-
-  async function init() {
-    window.TrophyState.load();
-    readUrlParams();
-    wire();
-    try {
-      all = await window.TrophyData.load();
-    } catch (e) {
-      document.getElementById('trophy-grid').innerHTML =
-        '<p class="empty">Could not load trophy data. Run the local server (node serve.ts) and reload.</p>';
-      return;
-    }
-    render();
-  }
-
-  document.addEventListener('DOMContentLoaded', init);
-})();
+boot().catch((err) => {
+  listEl.textContent = `Could not load guide data: ${err.message}`;
+});
